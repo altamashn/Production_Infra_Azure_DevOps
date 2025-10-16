@@ -16,6 +16,7 @@ resource "azurerm_network_security_group" "nsg" {
   name                = var.nsg_name
   resource_group_name = azurerm_virtual_network.avn.resource_group_name
   location            = azurerm_virtual_network.avn.location
+  tags                = var.tags
 
   dynamic "security_rule" {
     for_each = var.security_rules
