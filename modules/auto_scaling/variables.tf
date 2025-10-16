@@ -10,3 +10,6 @@ variable "auto-scale-name" {
 variable "target-vmss-id" {
   type = string
 }
+variable "tags" {
+  type = map(string)
+}

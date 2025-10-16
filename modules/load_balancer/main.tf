@@ -5,6 +5,7 @@ resource "azurerm_public_ip" "lb-pip" {
   allocation_method   = var.pip-allocation_method
   sku                 = var.pip-sku
   zones               = ["1", "2", "3"]
+  tags                = var.tags
 }
 resource "azurerm_lb" "lb" {
   name                = var.lb-name
@@ -15,10 +16,12 @@ resource "azurerm_lb" "lb" {
     name                 = "my-lb-frontend-ip"
     public_ip_address_id = azurerm_public_ip.lb-pip.id
   }
+  tags = var.tags
 }
 resource "azurerm_lb_backend_address_pool" "bepool" {
   name            = var.backend-address-pool-name
   loadbalancer_id = azurerm_lb.lb.id
+
 }
 resource "azurerm_lb_rule" "lb-rule" {
   name                           = var.lb-rule-name
@@ -56,6 +59,7 @@ resource "azurerm_public_ip" "nat-gtw-pip" {
   allocation_method   = var.pip-allocation_method
   sku                 = var.pip-sku
   zones               = ["1"]
+  tags                = var.tags
 }
 resource "azurerm_nat_gateway" "nat-gateway" {
   name                    = var.nat-gtw-name
@@ -64,6 +68,7 @@ resource "azurerm_nat_gateway" "nat-gateway" {
   sku_name                = "Standard"
   idle_timeout_in_minutes = 10
   zones                   = ["1"]
+  tags                    = var.tags
 }
 resource "azurerm_nat_gateway_public_ip_association" "nat-gtw-association" {
   nat_gateway_id       = azurerm_nat_gateway.nat-gateway.id

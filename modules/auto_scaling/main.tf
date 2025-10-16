@@ -55,4 +55,5 @@ resource "azurerm_monitor_autoscale_setting" "auto-scale" {
       custom_emails = [data.azurerm_key_vault_secret.notificationemail.value]
     }
   }
+  tags = var.tags
 }

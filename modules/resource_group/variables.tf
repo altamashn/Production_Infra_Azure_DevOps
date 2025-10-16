@@ -9,3 +9,6 @@ variable "location" {
     error_message = "The location must be one of: West Europe, East US, Southeast Asia."
   }
 }
+variable "tags" {
+  type = map(string)
+}

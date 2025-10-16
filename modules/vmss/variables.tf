@@ -30,3 +30,6 @@ variable "backend_address_pool_id" {
   description = "ID of the load balancer backend address pool"
   type        = string
 }
+variable "tags" {
+  type = map(string)
+}

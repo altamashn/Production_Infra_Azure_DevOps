@@ -3,6 +3,7 @@ resource "azurerm_virtual_network" "avn" {
   resource_group_name = var.rg_name
   location            = var.location
   address_space       = var.vnet_address_space
+  tags                = var.tags
 }
 resource "azurerm_subnet" "subnet" {
   for_each             = var.subnets

@@ -38,4 +38,5 @@ resource "azurerm_orchestrated_virtual_machine_scale_set" "vmss" {
   lifecycle {
     ignore_changes = [instances]
   }
+  tags = var.tags
 }

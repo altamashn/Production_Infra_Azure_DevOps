@@ -1,18 +1,18 @@
-rg_name            = "my-rg-prac-1"
+rg_name            = "esp-prd-rg"
 location           = "West Europe"
-vnet_name          = "my-vnet-1"
+vnet_name          = "esp-prd-vnet"
 vnet_address_space = ["10.0.0.0/16"]
 subnets = {
   "application_subnet" = {
-    subnet_name      = "app-subnet"
+    subnet_name      = "esp-app-subnet"
     address_prefixes = ["10.0.0.0/20"]
   }
   "management_subnet" = {
-    subnet_name      = "mgmt-subnet"
+    subnet_name      = "esp-mgmt-subnet"
     address_prefixes = ["10.0.16.0/20"]
   }
 }
-nsg_name = "my-app-nsg"
+nsg_name = "esp-prd-nsg"
 security_rules = [{
   name                       = "allow-http"
   priority                   = 100
@@ -68,17 +68,17 @@ security_rules = [{
     destination_port_range     = "*"
     destination_address_prefix = "*"
 }]
-lb-name                   = "my-lb-prac-1"
-lb-pip-name               = "my-lib-pip"
+lb-name                   = "esp-prd-lb"
+lb-pip-name               = "esp-prd-lb-pip"
 pip-allocation_method     = "Static"
 pip-sku                   = "Standard"
-backend-address-pool-name = "my-lb-backend-pool"
+backend-address-pool-name = "esp-prd-lb-bckpl"
 lb-nat-rule-name          = "ssh-rule"
 lb-probe-name             = "http-probe"
 lb-rule-name              = "http-rule"
-nat-gtw-name              = "my-nat-gtw"
-nat-gtw-pip               = "my-nat-gtw-pip"
-vmss-name                 = "my-vmss-1"
-vmss-nic-name             = "vmss-nic-1"
-environment               = "dev"
-auto-scale-name           = "vmss-autoscale"
+nat-gtw-name              = "esp-prd-nat-gtw"
+nat-gtw-pip               = "esp-prd-nat-gtw-pip"
+vmss-name                 = "esp-prd-vmss"
+vmss-nic-name             = "esp-prd-vmss-nic"
+environment               = "prd"
+auto-scale-name           = "esp-prd-vmss-ausc"

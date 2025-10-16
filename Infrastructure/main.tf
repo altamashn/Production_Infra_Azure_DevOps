@@ -2,6 +2,7 @@ module "resource_group" {
   source   = "../modules/resource_group"
   rg_name  = var.rg_name
   location = var.location
+  tags     = local.common_tags
 }
 module "network" {
   source             = "../modules/network"
@@ -12,6 +13,7 @@ module "network" {
   location           = module.resource_group.location
   nsg_name           = var.nsg_name
   security_rules     = var.security_rules
+  tags               = local.common_tags
 }
 module "lb" {
   source                    = "../modules/load_balancer"
@@ -28,6 +30,7 @@ module "lb" {
   lb-rule-name              = var.lb-rule-name
   nat-gtw-name              = var.nat-gtw-name
   nat-gtw-pip               = var.nat-gtw-pip
+  tags                      = local.common_tags
 }
 module "vmss" {
   source                  = "../modules/vmss"
@@ -39,6 +42,7 @@ module "vmss" {
   location                = var.location
   application_subnet_id   = module.network.application_subnet_id
   backend_address_pool_id = module.lb.backend_address_pool_id
+  tags                    = local.common_tags
 }
 module "autoscale" {
   source          = "../modules/auto_scaling"
@@ -46,4 +50,9 @@ module "autoscale" {
   rg_name         = module.resource_group.rg_name
   location        = module.resource_group.location
   target-vmss-id  = module.vmss.vmss-id
+  tags            = local.common_tags
+}
+module "entraid" {
+  source = "../modules/entra_id"
+  rg_id  = module.resource_group.rg_id
 }
