@@ -15,7 +15,6 @@ variable "sku_name" {
     "prod"  = "Standard_B2ms"
   }
 }
-
 variable "environment" {
   type = string
 }
