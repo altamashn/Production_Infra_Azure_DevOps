@@ -41,7 +41,7 @@ stages:
               backendAzureRmStorageAccountName: '$(storage_account_name)'
               backendAzureRmContainerName: '$(container_name)'
               backendAzureRmKey: '$(key)'
-              backendAzureRmUseEntraIdForAuthentication: false
+              
           - task: TerraformTask@5
             displayName: 'Terraform Validate'
             inputs:
