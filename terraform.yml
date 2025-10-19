@@ -76,16 +76,24 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
 
-          - task: PublishPipelineArtifact@1
+          - task: ArchiveFiles@2
+            displayName: 'Archive FIles'
             inputs:
-              targetPath: '$(System.DefaultWorkingDirectory)/Infrastructure'
-              artifact: 'terraform-plan'
-              publishLocation: 'pipeline'
+              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              replaceExistingArchive: true
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Build Artifacts'
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
 
   - stage: Deploy
     displayName: 'Terraform Apply - Main Branch'
     condition: eq(variables['Build.SourceBranchName'], 'refs/heads/main')
-    dependsOn: []
     jobs:
       - job: ApplyJob
         displayName: 'Run Terraform Apply'
@@ -112,11 +120,13 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
-          - task: DownloadPipelineArtifact@2
+          - task: ExtractFiles@1
+            displayName: 'Extracting Files'
             inputs:
-              buildType: 'current'
-              artifactName: 'terraform-plan'
-              targetPath: '$(System.DefaultWorkingDirectory)/Infrastructure'
+              archiveFilePatterns: '**/*.zip'
+              destinationFolder: '$(System.DefaultWorkingDirectory)/Infrastructure'
+              cleanDestinationFolder: true
+              overwriteExistingFiles: false
           - task: TerraformTask@5
             displayName: 'Terraform Apply (Main Branch)'
             inputs:
