@@ -97,6 +97,7 @@ stages:
       - job: ApplyJob
         displayName: 'Run Terraform Apply'
         steps:
+        
           - task: TerraformInstaller@1
             displayName: 'Terraform latest version Install'
             inputs:
@@ -120,12 +121,12 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
           - task: ExtractFiles@1
-            displayName: 'Extracting Files'
+            displayName: 'Extract Files'
             inputs:
-              archiveFilePatterns: '**/*.zip'
+              archiveFilePatterns: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               destinationFolder: '$(System.DefaultWorkingDirectory)/Infrastructure'
               cleanDestinationFolder: true
-              overwriteExistingFiles: false
+              overwriteExistingFiles: true
           - task: TerraformTask@5
             displayName: 'Terraform Apply (Main Branch)'
             inputs:
