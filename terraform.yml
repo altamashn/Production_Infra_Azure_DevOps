@@ -119,6 +119,14 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download Artifacts'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(Pipeline.Workspace)'
+
           - task: ExtractFiles@1
             displayName: 'Extract Files'
             inputs:
