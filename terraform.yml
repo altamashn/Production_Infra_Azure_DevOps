@@ -1,9 +1,8 @@
 trigger:
   branches:
-    exclude:
-      - main
     include:
       - feature/*
+      - master
 
 pool:
   vmImage: ubuntu-latest
@@ -14,7 +13,7 @@ variables:
 stages:
   - stage: Validate
     displayName: 'Terraform Validation - Feature Branch'
-    condition: and(succeeded(),ne(variables['Build.SourceBranchName'], 'main'))
+    condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/'))
     jobs:
       - job: 'ValidateJob' 
         displayName: 'Run Terraform Validate & Plan'
@@ -87,7 +86,7 @@ stages:
 
   - stage: Deploy
     displayName: 'Terraform Apply - Main Branch'
-    condition: eq(variables['Build.SourceBranchName'], 'refs/heads/main')
+    condition: eq(variables['Build.SourceBranchName'], 'refs/heads/master')
     jobs:
       - job: ApplyJob
         displayName: 'Run Terraform Apply'
