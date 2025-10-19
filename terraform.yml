@@ -118,6 +118,7 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
+              environmentServiceNameAzureRM: 'Terraform-DevOps'
           - task: ExtractFiles@1
             displayName: 'Extract Files'
             inputs:
