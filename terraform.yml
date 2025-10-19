@@ -1,0 +1,120 @@
+trigger:
+  branches:
+    include:
+      - feature/*
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: 'Backend-Details'
+
+stages:
+  - stage: Validate
+    displayName: 'Terraform Validation - Feature Branch'
+    condition: and(succeeded(),ne(variables['Build.SourceBranchName'], 'main'))
+    jobs:
+      - job: 'ValidateJob' 
+        displayName: 'Run Terraform Validate & Plan'
+        steps:
+          - task: TerraformInstaller@1
+            displayName: 'Terraform Install latest version'
+            inputs:
+              terraformVersion: 'latest'
+          
+          - task: TerraformTask@5
+            displayName: 'Terraform Initialize'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              backendServiceArm: 'Terraform-DevOps'
+              backendAzureRmResourceGroupName: '$(resource_group_name)'
+              backendAzureRmStorageAccountName: '$(storage_account_name)'
+              backendAzureRmContainerName: '$(container_name)'
+              backendAzureRmKey: '$(key)'
+          - task: TerraformTask@5
+            displayName: 'Terraform Validate'
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+          - task: TerraformTask@5
+            displayName: 'Terraform Format'
+            inputs:
+              provider: 'azurerm'
+              command: 'custom'
+              outputTo: 'console'
+              customCommand: 'fmt'
+              environmentServiceNameAzureRM: 'Terraform-DevOps'
+              workingDirectory: '$(System.DefaultWorkingDirectory/PRODUCTION_INFRA/Infrastructure'
+          - task: TerraformTask@5
+            displayName: 'Terraform Show'
+            inputs:
+              provider: 'azurerm'
+              command: 'show'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              outputTo: 'file'
+              outputFormat: 'default'
+              fileName: 'terraform-plan'
+              environmentServiceNameAzureRM: 'Terraform-DevOps'
+          - task: TerraformTask@5
+            displayName: 'Terraform Plan - Feature Branch'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              environmentServiceNameAzureRM: 'Terraform-DevOps'
+
+          - task: PublishPipelineArtifact@1
+            inputs:
+              targetPath: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              artifact: 'terraform-plan'
+              publishLocation: 'pipeline'
+
+  - stage: Deploy
+    displayName: 'Terraform Apply - Main Branch'
+    condition: eq(variables['Build.SourceBranchName'], 'main')
+    dependsOn: []
+    jobs:
+      - job: ApplyJob
+        displayName: 'Run Terraform Apply'
+        steps:
+          - task: TerraformInstaller@1
+            displayName: 'Terraform latest version Install'
+            inputs:
+              terraformVersion: 'latest'
+          - task: TerraformTask@5
+            displayName: 'Terraform Init'
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              backendServiceArm: 'Terraform-DevOps'
+              backendAzureRmResourceGroupName: '$(resource_group_name)'
+              backendAzureRmStorageAccountName: '$(storage_account_name)'
+              backendAzureRmContainerName: '$(container_name)'
+              backendAzureRmKey: '$(key)'
+          - task: TerraformTask@5
+            displayName: 'Terraform Plan'
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              buildType: 'current'
+              artifactName: 'terraform-plan'
+              targetPath: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+          - task: TerraformTask@5
+            displayName: 'Terraform Apply (Main Branch)'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
+              environmentServiceNameAzureRM: 'Terraform-DevOps'
