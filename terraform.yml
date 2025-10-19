@@ -12,7 +12,7 @@ variables:
 
 stages:
   - stage: Validate
-    displayName: 'Terraform Validation - Feature Branch'
+    displayName: 'Terraform Validation Feature Branch'
     condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/'))
     jobs:
       - job: 'ValidateJob' 
