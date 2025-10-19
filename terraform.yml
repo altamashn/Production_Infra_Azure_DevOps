@@ -90,7 +90,7 @@ stages:
 
   - stage: Deploy
     displayName: 'Terraform Apply - Main Branch'
-    condition: eq(variables['Build.SourceBranchName'], 'refs/heads/master')
+    condition: eq(variables['Build.SourceBranchName'], 'master')
     jobs:
       - job: ApplyJob
         displayName: 'Run Terraform Apply'
