@@ -1,110 +1,96 @@
-# 🚀 Production Infrastructure on Azure with Terraform
+# 🌐 Production-Level Azure Infrastructure with Terraform & Azure DevOps
 
-This repository contains Terraform code for provisioning and managing a highly available, scalable Azure infrastructure. It follows a modular architecture, uses best practices for tagging, naming, and access control, and is fully version-controlled using Git.
-
----
-
-## 🧱 Project Overview
-
-This setup creates:
-
-- 🖥️ **Azure Virtual Machine Scale Set (VMSS)** — Hosts the application
-- ⚖️ **Load Balancer** — Distributes incoming traffic
-- 🌐 **Virtual Network & Subnets** — Isolates and secures workloads
-- 🔒 **Network Security Group (NSG)** — Defines inbound/outbound rules
-- 📈 **Auto Scaling** — Dynamically adjusts VM instances
-- 👥 **Entra ID Users** — With predefined Contributor and Reader roles
-- 🏷️ **Resource Tags** — for cost and ownership tracking
-- 🕒 **Git Tags** — to version-control Terraform code
+This repository contains infrastructure-as-code (IaC) to provision and manage **production-grade Azure resources** using **Terraform**, automated via **Azure DevOps CI/CD pipelines**.
 
 ---
 
-## 📁 Project Structure
-<img width="267" height="794" alt="image" src="https://github.com/user-attachments/assets/7f13e45b-6206-475f-81ef-58401f6904e1" />
+## 🚀 Project Overview
 
-# 🚀 Production Infrastructure Deployment Guide
+This setup is designed to ensure **secure, automated, and auditable** provisioning of Azure resources, following DevOps best practices.
 
-This repository automates the provisioning of Azure infrastructure using **Terraform**.
-
----
-
-## 1️⃣ Clone the Repository
-
-git clone https://github.com/altamashn/Production_Infra.git
-
-cd Production_Infra/Infrastructure
+- 📦 **Infrastructure as Code (IaC)**: Written in Terraform and organized under the `/Infrastructure` directory.
+- ⚙️ **CI/CD Pipeline**: Implemented via GitHub Actions to automate validation, planning, and deployment.
+- 🔐 **Branch Protection**: Prevents direct pushes to `master`; all changes must go through Pull Requests (PRs).
+- 👥 **Approval Workflow**: Enforces peer review before infrastructure is deployed.
 
 ---
 
-## 2️⃣ Initialize Terraform
+## 🔁 CI/CD Workflow Overview
 
-terraform init
+### ✅ 1. **Feature Branch Workflow**
 
-This will:
-- Download Azure provider plugins
-- Initialize backend configuration
-- Prepare all modules for deployment
+- A **DevOps engineer** creates or updates a `feature/*` branch.
+- GitHub Actions automatically triggers the **Validate & Plan** stage:
+  - `terraform init`
+  - `terraform validate`
+  - `terraform fmt`
+  - `terraform plan`
+- This ensures all changes are valid and no infrastructure drift occurs before PR creation.
 
----
+### 🛡️ 2. **Pull Request (PR) Review**
 
-## 3️⃣ Validate and Format
+- A pull request is opened to merge `feature/*` into `master`.
+- **Branch protection rules** require:
+  - At least one approving reviewer
+  - All checks (validation) to pass
+- Once approved, the code is merged into `master`.
 
-terraform fmt -recursive
+### 🚀 3. **Deploy to Production (Main Branch)**
 
-terraform validate
-
-Ensures your code is properly formatted and syntactically correct.
-
----
-
-## 4️⃣ Preview the Plan
-
-terraform plan -var-file="terraform.tfvars"
-
-See what Terraform will create before actual deployment.
-
----
-
-## 5️⃣ Deploy the Infrastructure
-
-terraform apply -var-file="terraform.tfvars" --auto-approve
-
-Once confirmed, Terraform provisions all Azure resources.
+- Once changes are merged to `master`, the **Deploy** job is triggered:
+  - `terraform init` (with remote backend config)
+  - `terraform plan`
+  - `terraform apply`
+- Azure infrastructure is provisioned or updated accordingly.
 
 ---
 
-## 6️⃣ Destroy Resources (if needed)
+## 🔐 Security & Governance
 
-terraform destroy -var-file="terraform.tfvars"
-
-Removes all provisioned resources cleanly.
-
----
-
-## 🔐 Access Management
-
-Two **Entra ID** users are created:
-
-| User              | Role         |
-|-------------------|-------------|
-| 👨‍💻 DevOps User  | Contributor |
-| 📊 Monitoring User| Reader      |
-
-- Passwords are securely retrieved from **Azure Key Vault** via Terraform data blocks.
+- **Branch Protection**: `master` branch is protected. No direct pushes allowed. All changes must go through PR + review.
+- **State Management**: Terraform remote backend is configured using an Azure Storage Account to ensure consistent, safe state storage.
 
 ---
 
-## 🌍 Application Access
+## 🧪 Pipeline Summary
 
-Once deployed, open your Load Balancer public IP in the browser:
+| Event               | Trigger                   | Action                                  |
+|--------------------|---------------------------|----------------------------------------- |
+| Push to feature/*  | `push` event              | Run `validate`, `init , `fmt`, `plan`   |
+| PR to main         | `pull_request` event      | Reviewer approval required               |
+| Merge to main      | `push` to `main`          | Run `init`, `plan`, `apply`              |
 
-http://<public_ip>
+---
 
-text
+## 📄 Requirements
 
-You’ll see:
+- Azure Subscription
+- Azure Service Principal with appropriate role (`Contributor` or scoped role)
+- Azure repository with Variable-Groups:
+  - Variables: `RESOURCE_GROUP_NAME`, `STORAGE_ACCOUNT_NAME`, `CONTAINER_NAME`, `KEY`
 
-<img width="1365" height="407" alt="image" src="https://github.com/user-attachments/assets/49b8ddb3-ccb0-4a87-b946-3aa1e1802eca" />
+---
+
+## 📘 Setup Instructions
+
+1. **Clone the repo**  
+   ```bash
+   
+   git clone https://github.com/altamashn/Production_Infra_Azure_DevOps.git
+   
+   cd Production_Infra_Azure_DevOps
+   
+2. **Configure Terraform backend in backend.tf using variables.****
+
+3. **Push changes to a feature branch**
+
+    git checkout -b feature/my-change
+   
+    git push origin feature/my-change
+
+5. **Open a pull request and request a review.**
+
+6. **Once approved and merged to master, the infrastructure will be deployed automatically.**
 
 ---
 
