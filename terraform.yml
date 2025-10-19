@@ -75,19 +75,18 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
-
           - task: ArchiveFiles@2
-            displayName: 'Archive FIles'
+            displayName: 'Archive Files'
             inputs:
-              rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
-              includeRootFolder: false
+              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/Infrastructure'
+              includeRootFolder: true
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               replaceExistingArchive: true
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Build Artifacts'
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               ArtifactName: 'drop'
               publishLocation: 'Container'
 
