@@ -35,7 +35,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               backendServiceArm: 'Terraform-DevOps'
               backendAzureRmResourceGroupName: '$(resource_group_name)'
               backendAzureRmStorageAccountName: '$(storage_account_name)'
@@ -47,7 +47,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'validate'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
           - task: TerraformTask@5
             displayName: 'Terraform Format'
             inputs:
@@ -56,13 +56,13 @@ stages:
               outputTo: 'console'
               customCommand: 'fmt'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
           - task: TerraformTask@5
             displayName: 'Terraform Show'
             inputs:
               provider: 'azurerm'
               command: 'show'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               outputTo: 'file'
               outputFormat: 'default'
               fileName: 'terraform-plan'
@@ -72,12 +72,12 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
 
           - task: PublishPipelineArtifact@1
             inputs:
-              targetPath: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              targetPath: '$(System.DefaultWorkingDirectory)/Infrastructure'
               artifact: 'terraform-plan'
               publishLocation: 'pipeline'
 
@@ -98,7 +98,7 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'init'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               backendServiceArm: 'Terraform-DevOps'
               backendAzureRmResourceGroupName: '$(resource_group_name)'
               backendAzureRmStorageAccountName: '$(storage_account_name)'
@@ -110,16 +110,16 @@ stages:
             inputs:
               provider: 'azurerm'
               command: 'plan'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
           - task: DownloadPipelineArtifact@2
             inputs:
               buildType: 'current'
               artifactName: 'terraform-plan'
-              targetPath: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              targetPath: '$(System.DefaultWorkingDirectory)/Infrastructure'
           - task: TerraformTask@5
             displayName: 'Terraform Apply (Main Branch)'
             inputs:
               provider: 'azurerm'
               command: 'apply'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/Production_Infra/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Infrastructure'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
