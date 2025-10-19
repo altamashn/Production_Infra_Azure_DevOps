@@ -1,5 +1,7 @@
 trigger:
   branches:
+    exclude:
+      - main
     include:
       - feature/*
 
@@ -53,7 +55,7 @@ stages:
               outputTo: 'console'
               customCommand: 'fmt'
               environmentServiceNameAzureRM: 'Terraform-DevOps'
-              workingDirectory: '$(System.DefaultWorkingDirectory/PRODUCTION_INFRA/Infrastructure'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/PRODUCTION_INFRA/Infrastructure'
           - task: TerraformTask@5
             displayName: 'Terraform Show'
             inputs:
@@ -80,7 +82,7 @@ stages:
 
   - stage: Deploy
     displayName: 'Terraform Apply - Main Branch'
-    condition: eq(variables['Build.SourceBranchName'], 'main')
+    condition: eq(variables['Build.SourceBranchName'], 'refs/heads/main')
     dependsOn: []
     jobs:
       - job: ApplyJob
